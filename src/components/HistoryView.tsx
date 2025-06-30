@@ -16,6 +16,16 @@ const HistoryView = ({ earningsData }: HistoryViewProps) => {
   const calculateMonthlySummary = (monthData: any): MonthlySummary => {
     const entries = Object.values(monthData);
     
+    if (entries.length === 0) {
+      return {
+        totalGross: 0,
+        totalNet: 0,
+        totalHours: 0,
+        totalOrders: 0,
+        daysWorked: 0
+      };
+    }
+    
     return entries.reduce((acc: MonthlySummary, entry: any) => ({
       totalGross: acc.totalGross + entry.grossEarnings,
       totalNet: acc.totalNet + entry.netEarnings,
@@ -100,7 +110,7 @@ const HistoryView = ({ earningsData }: HistoryViewProps) => {
 
               {isExpanded && (
                 <div className="mt-4 pt-4 border-t border-slate-700">
-                  <h4 className="text-white font-medium mb-3">Daily Breakdown</h4>
+                  <h4 className="text-white font-medium mb-3">Daily Work Log</h4>
                   <div className="space-y-2 max-h-64 overflow-y-auto">
                     {Object.entries(monthData)
                       .sort(([a], [b]) => b.localeCompare(a))
@@ -108,16 +118,23 @@ const HistoryView = ({ earningsData }: HistoryViewProps) => {
                         <div key={date} className="bg-slate-700 p-3 rounded-lg">
                           <div className="flex justify-between items-start mb-2">
                             <span className="text-white font-medium">
-                              {format(new Date(date), 'MMM dd')}
+                              {format(new Date(date), 'MMM dd, yyyy')}
                             </span>
                             <div className="text-right">
                               <div className="text-green-400 font-semibold">€{entry.netEarnings.toFixed(2)}</div>
+                              <div className="text-cyan-400 text-sm">€{entry.grossEarnings.toFixed(2)} gross</div>
                             </div>
                           </div>
                           <div className="grid grid-cols-3 gap-2 text-xs text-slate-400">
-                            <div>{entry.hours}h</div>
-                            <div>{entry.orders} orders</div>
-                            <div>€{entry.cashReceived.toFixed(2)} cash</div>
+                            <div>
+                              <span className="text-slate-300">Hours:</span> {entry.hours}h
+                            </div>
+                            <div>
+                              <span className="text-slate-300">Orders:</span> {entry.orders}
+                            </div>
+                            <div>
+                              <span className="text-slate-300">Cash:</span> €{entry.cashReceived.toFixed(2)}
+                            </div>
                           </div>
                         </div>
                       ))}
