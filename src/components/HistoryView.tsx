@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -151,7 +150,7 @@ const HistoryView = ({ earningsData, onDeleteEntry }: HistoryViewProps) => {
                                 </AlertDialogTrigger>
                                 <AlertDialogContent className="bg-slate-800 border-slate-700">
                                   <AlertDialogHeader>
-                                    <AlertDialogTitle className="text-white">{t('history.delete')}</AlertDialogTitle>
+                                    <AlertDialogTitle className="text-white">{t('history.deleteEntry')}</AlertDialogTitle>
                                     <AlertDialogDescription className="text-slate-300">
                                       {t('history.deleteConfirm').replace('{date}', format(new Date(date), 'PPP'))}
                                     </AlertDialogDescription>
