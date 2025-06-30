@@ -2,15 +2,18 @@
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { EarningsData, MonthlySummary } from '@/types/earnings';
 import { format, parse } from 'date-fns';
-import { ChevronDown, ChevronUp } from 'lucide-react';
+import { ChevronDown, ChevronUp, Trash2 } from 'lucide-react';
+import { toast } from "@/hooks/use-toast";
 
 interface HistoryViewProps {
   earningsData: EarningsData;
+  onDeleteEntry: (monthKey: string, date: string) => void;
 }
 
-const HistoryView = ({ earningsData }: HistoryViewProps) => {
+const HistoryView = ({ earningsData, onDeleteEntry }: HistoryViewProps) => {
   const [expandedMonth, setExpandedMonth] = useState<string | null>(null);
 
   const calculateMonthlySummary = (monthData: any): MonthlySummary => {
@@ -38,6 +41,14 @@ const HistoryView = ({ earningsData }: HistoryViewProps) => {
       totalHours: 0,
       totalOrders: 0,
       daysWorked: 0
+    });
+  };
+
+  const handleDeleteEntry = (monthKey: string, date: string) => {
+    onDeleteEntry(monthKey, date);
+    toast({
+      title: "Entry Deleted",
+      description: `Entry for ${format(new Date(date), 'PPP')} has been deleted.`,
     });
   };
 
@@ -120,9 +131,41 @@ const HistoryView = ({ earningsData }: HistoryViewProps) => {
                             <span className="text-white font-medium">
                               {format(new Date(date), 'MMM dd, yyyy')}
                             </span>
-                            <div className="text-right">
-                              <div className="text-green-400 font-semibold">€{entry.netEarnings.toFixed(2)}</div>
-                              <div className="text-cyan-400 text-sm">€{entry.grossEarnings.toFixed(2)} gross</div>
+                            <div className="flex items-center gap-2">
+                              <div className="text-right">
+                                <div className="text-green-400 font-semibold">€{entry.netEarnings.toFixed(2)}</div>
+                                <div className="text-cyan-400 text-sm">€{entry.grossEarnings.toFixed(2)} gross</div>
+                              </div>
+                              <AlertDialog>
+                                <AlertDialogTrigger asChild>
+                                  <Button 
+                                    variant="ghost" 
+                                    size="sm"
+                                    className="text-red-400 hover:text-red-300 hover:bg-red-900/20 p-1 h-8 w-8"
+                                  >
+                                    <Trash2 className="h-4 w-4" />
+                                  </Button>
+                                </AlertDialogTrigger>
+                                <AlertDialogContent className="bg-slate-800 border-slate-700">
+                                  <AlertDialogHeader>
+                                    <AlertDialogTitle className="text-white">Delete Entry</AlertDialogTitle>
+                                    <AlertDialogDescription className="text-slate-300">
+                                      Are you sure you want to delete the entry for {format(new Date(date), 'PPP')}? This action cannot be undone.
+                                    </AlertDialogDescription>
+                                  </AlertDialogHeader>
+                                  <AlertDialogFooter>
+                                    <AlertDialogCancel className="bg-slate-700 text-white border-slate-600 hover:bg-slate-600">
+                                      Cancel
+                                    </AlertDialogCancel>
+                                    <AlertDialogAction 
+                                      onClick={() => handleDeleteEntry(monthKey, date)}
+                                      className="bg-red-600 hover:bg-red-700"
+                                    >
+                                      Delete
+                                    </AlertDialogAction>
+                                  </AlertDialogFooter>
+                                </AlertDialogContent>
+                              </AlertDialog>
                             </div>
                           </div>
                           <div className="grid grid-cols-3 gap-2 text-xs text-slate-400">
