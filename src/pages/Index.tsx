@@ -4,10 +4,13 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import DailyInput from '@/components/DailyInput';
 import MonthlyView from '@/components/MonthlyView';
 import HistoryView from '@/components/HistoryView';
+import LanguageSelector from '@/components/LanguageSelector';
 import { EarningsData } from '@/types/earnings';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 const Index = () => {
   const [earningsData, setEarningsData] = useState<EarningsData>({});
+  const { t } = useLanguage();
 
   // Load data from localStorage on component mount
   useEffect(() => {
@@ -55,9 +58,14 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
       <div className="container mx-auto px-4 py-6 max-w-md">
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-white mb-2">Wolt Driver</h1>
-          <p className="text-cyan-400 text-lg">Earnings Tracker</p>
+        <div className="flex justify-between items-start mb-6">
+          <div className="text-center flex-1">
+            <h1 className="text-3xl font-bold text-white mb-2">{t('app.title')}</h1>
+            <p className="text-cyan-400 text-lg">{t('app.subtitle')}</p>
+          </div>
+          <div className="ml-4">
+            <LanguageSelector />
+          </div>
         </div>
 
         <Tabs defaultValue="daily" className="w-full">
@@ -66,19 +74,19 @@ const Index = () => {
               value="daily" 
               className="text-slate-300 data-[state=active]:bg-cyan-500 data-[state=active]:text-white"
             >
-              Daily
+              {t('tabs.daily')}
             </TabsTrigger>
             <TabsTrigger 
               value="monthly" 
               className="text-slate-300 data-[state=active]:bg-cyan-500 data-[state=active]:text-white"
             >
-              Current
+              {t('tabs.current')}
             </TabsTrigger>
             <TabsTrigger 
               value="history" 
               className="text-slate-300 data-[state=active]:bg-cyan-500 data-[state=active]:text-white"
             >
-              History
+              {t('tabs.history')}
             </TabsTrigger>
           </TabsList>
 

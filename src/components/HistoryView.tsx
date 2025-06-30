@@ -7,6 +7,7 @@ import { EarningsData, MonthlySummary } from '@/types/earnings';
 import { format, parse } from 'date-fns';
 import { ChevronDown, ChevronUp, Trash2 } from 'lucide-react';
 import { toast } from "@/hooks/use-toast";
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface HistoryViewProps {
   earningsData: EarningsData;
@@ -15,6 +16,7 @@ interface HistoryViewProps {
 
 const HistoryView = ({ earningsData, onDeleteEntry }: HistoryViewProps) => {
   const [expandedMonth, setExpandedMonth] = useState<string | null>(null);
+  const { t } = useLanguage();
 
   const calculateMonthlySummary = (monthData: any): MonthlySummary => {
     const entries = Object.values(monthData);
@@ -46,9 +48,10 @@ const HistoryView = ({ earningsData, onDeleteEntry }: HistoryViewProps) => {
 
   const handleDeleteEntry = (monthKey: string, date: string) => {
     onDeleteEntry(monthKey, date);
+    const formattedDate = format(new Date(date), 'PPP');
     toast({
-      title: "Entry Deleted",
-      description: `Entry for ${format(new Date(date), 'PPP')} has been deleted.`,
+      title: t('toast.entryDeleted'),
+      description: t('toast.entryDeletedDesc').replace('{date}', formattedDate),
     });
   };
 
@@ -60,8 +63,8 @@ const HistoryView = ({ earningsData, onDeleteEntry }: HistoryViewProps) => {
       <Card className="bg-slate-800 border-slate-700">
         <CardContent className="py-8">
           <div className="text-center text-slate-400">
-            <p>No historical data available.</p>
-            <p className="text-sm">Start tracking your earnings to see history here!</p>
+            <p>{t('history.noData')}</p>
+            <p className="text-sm">{t('history.startTracking')}</p>
           </div>
         </CardContent>
       </Card>
@@ -96,32 +99,32 @@ const HistoryView = ({ earningsData, onDeleteEntry }: HistoryViewProps) => {
               <div className="grid grid-cols-2 gap-3 mb-4">
                 <div className="bg-slate-700 p-3 rounded text-center">
                   <div className="text-cyan-400 text-lg font-semibold">€{summary.totalGross.toFixed(2)}</div>
-                  <div className="text-slate-400 text-xs">Gross</div>
+                  <div className="text-slate-400 text-xs">{t('history.gross')}</div>
                 </div>
                 <div className="bg-slate-700 p-3 rounded text-center">
                   <div className="text-green-400 text-lg font-semibold">€{summary.totalNet.toFixed(2)}</div>
-                  <div className="text-slate-400 text-xs">Net</div>
+                  <div className="text-slate-400 text-xs">{t('history.net')}</div>
                 </div>
               </div>
 
               <div className="grid grid-cols-3 gap-2 text-center text-sm">
                 <div>
                   <div className="text-white font-medium">{summary.daysWorked}</div>
-                  <div className="text-slate-400 text-xs">Days</div>
+                  <div className="text-slate-400 text-xs">{t('history.days')}</div>
                 </div>
                 <div>
                   <div className="text-white font-medium">{summary.totalHours.toFixed(1)}</div>
-                  <div className="text-slate-400 text-xs">Hours</div>
+                  <div className="text-slate-400 text-xs">{t('history.hours')}</div>
                 </div>
                 <div>
                   <div className="text-white font-medium">{summary.totalOrders}</div>
-                  <div className="text-slate-400 text-xs">Orders</div>
+                  <div className="text-slate-400 text-xs">{t('history.orders')}</div>
                 </div>
               </div>
 
               {isExpanded && (
                 <div className="mt-4 pt-4 border-t border-slate-700">
-                  <h4 className="text-white font-medium mb-3">Daily Work Log</h4>
+                  <h4 className="text-white font-medium mb-3">{t('history.dailyLog')}</h4>
                   <div className="space-y-2 max-h-64 overflow-y-auto">
                     {Object.entries(monthData)
                       .sort(([a], [b]) => b.localeCompare(a))
@@ -148,20 +151,20 @@ const HistoryView = ({ earningsData, onDeleteEntry }: HistoryViewProps) => {
                                 </AlertDialogTrigger>
                                 <AlertDialogContent className="bg-slate-800 border-slate-700">
                                   <AlertDialogHeader>
-                                    <AlertDialogTitle className="text-white">Delete Entry</AlertDialogTitle>
+                                    <AlertDialogTitle className="text-white">{t('history.delete')}</AlertDialogTitle>
                                     <AlertDialogDescription className="text-slate-300">
-                                      Are you sure you want to delete the entry for {format(new Date(date), 'PPP')}? This action cannot be undone.
+                                      {t('history.deleteConfirm').replace('{date}', format(new Date(date), 'PPP'))}
                                     </AlertDialogDescription>
                                   </AlertDialogHeader>
                                   <AlertDialogFooter>
                                     <AlertDialogCancel className="bg-slate-700 text-white border-slate-600 hover:bg-slate-600">
-                                      Cancel
+                                      {t('history.cancel')}
                                     </AlertDialogCancel>
                                     <AlertDialogAction 
                                       onClick={() => handleDeleteEntry(monthKey, date)}
                                       className="bg-red-600 hover:bg-red-700"
                                     >
-                                      Delete
+                                      {t('history.delete')}
                                     </AlertDialogAction>
                                   </AlertDialogFooter>
                                 </AlertDialogContent>
@@ -170,13 +173,13 @@ const HistoryView = ({ earningsData, onDeleteEntry }: HistoryViewProps) => {
                           </div>
                           <div className="grid grid-cols-3 gap-2 text-xs text-slate-400">
                             <div>
-                              <span className="text-slate-300">Hours:</span> {entry.hours}h
+                              <span className="text-slate-300">{t('history.hours')}:</span> {entry.hours}h
                             </div>
                             <div>
-                              <span className="text-slate-300">Orders:</span> {entry.orders}
+                              <span className="text-slate-300">{t('history.orders')}:</span> {entry.orders}
                             </div>
                             <div>
-                              <span className="text-slate-300">Cash:</span> €{entry.cashReceived.toFixed(2)}
+                              <span className="text-slate-300">{t('history.cash')}:</span> €{entry.cashReceived.toFixed(2)}
                             </div>
                           </div>
                         </div>
