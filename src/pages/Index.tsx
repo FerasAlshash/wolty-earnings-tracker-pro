@@ -4,6 +4,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import DailyInput from '@/components/DailyInput';
 import MonthlyView from '@/components/MonthlyView';
 import HistoryView from '@/components/HistoryView';
+import ChartsView from '@/components/ChartsView';
+import MonthlyComparison from '@/components/MonthlyComparison';
 import { EarningsData } from '@/types/earnings';
 
 const Index = () => {
@@ -61,22 +63,34 @@ const Index = () => {
         </div>
 
         <Tabs defaultValue="daily" className="w-full">
-          <TabsList className="grid w-full grid-cols-3 bg-slate-800 border border-slate-700">
+          <TabsList className="grid w-full grid-cols-5 bg-slate-800 border border-slate-700">
             <TabsTrigger 
               value="daily" 
-              className="text-slate-300 data-[state=active]:bg-cyan-500 data-[state=active]:text-white"
+              className="text-slate-300 data-[state=active]:bg-cyan-500 data-[state=active]:text-white text-xs"
             >
               Daily
             </TabsTrigger>
             <TabsTrigger 
               value="monthly" 
-              className="text-slate-300 data-[state=active]:bg-cyan-500 data-[state=active]:text-white"
+              className="text-slate-300 data-[state=active]:bg-cyan-500 data-[state=active]:text-white text-xs"
             >
               Current
             </TabsTrigger>
             <TabsTrigger 
+              value="charts" 
+              className="text-slate-300 data-[state=active]:bg-cyan-500 data-[state=active]:text-white text-xs"
+            >
+              Charts
+            </TabsTrigger>
+            <TabsTrigger 
+              value="compare" 
+              className="text-slate-300 data-[state=active]:bg-cyan-500 data-[state=active]:text-white text-xs"
+            >
+              Compare
+            </TabsTrigger>
+            <TabsTrigger 
               value="history" 
-              className="text-slate-300 data-[state=active]:bg-cyan-500 data-[state=active]:text-white"
+              className="text-slate-300 data-[state=active]:bg-cyan-500 data-[state=active]:text-white text-xs"
             >
               History
             </TabsTrigger>
@@ -88,6 +102,14 @@ const Index = () => {
 
           <TabsContent value="monthly" className="mt-6">
             <MonthlyView earningsData={earningsData} />
+          </TabsContent>
+
+          <TabsContent value="charts" className="mt-6">
+            <ChartsView earningsData={earningsData} />
+          </TabsContent>
+
+          <TabsContent value="compare" className="mt-6">
+            <MonthlyComparison earningsData={earningsData} />
           </TabsContent>
 
           <TabsContent value="history" className="mt-6">

@@ -1,12 +1,12 @@
-
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { EarningsData, MonthlySummary } from '@/types/earnings';
 import { format, parse } from 'date-fns';
-import { ChevronDown, ChevronUp, Trash2 } from 'lucide-react';
+import { ChevronDown, ChevronUp, Trash2, Download, FileText } from 'lucide-react';
 import { toast } from "@/hooks/use-toast";
+import { exportMonthToPDF, exportMonthToExcel } from '@/utils/exportUtils';
 
 interface HistoryViewProps {
   earningsData: EarningsData;
@@ -82,14 +82,34 @@ const HistoryView = ({ earningsData, onDeleteEntry }: HistoryViewProps) => {
             <CardHeader className="pb-3">
               <div className="flex items-center justify-between">
                 <CardTitle className="text-white text-lg">{monthName}</CardTitle>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setExpandedMonth(isExpanded ? null : monthKey)}
-                  className="text-slate-400 hover:text-white hover:bg-slate-700"
-                >
-                  {isExpanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
-                </Button>
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => exportMonthToPDF(monthKey, monthData)}
+                    className="text-slate-400 hover:text-white hover:bg-slate-700"
+                    title="Export to PDF"
+                  >
+                    <FileText className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => exportMonthToExcel(monthKey, monthData)}
+                    className="text-slate-400 hover:text-white hover:bg-slate-700"
+                    title="Export to Excel"
+                  >
+                    <Download className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setExpandedMonth(isExpanded ? null : monthKey)}
+                    className="text-slate-400 hover:text-white hover:bg-slate-700"
+                  >
+                    {isExpanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                  </Button>
+                </div>
               </div>
             </CardHeader>
             <CardContent className="pt-0">
