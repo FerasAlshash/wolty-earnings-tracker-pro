@@ -8,11 +8,31 @@ import HistoryView from '@/components/HistoryView';
 import ChartsView from '@/components/ChartsView';
 import MonthlyComparison from '@/components/MonthlyComparison';
 import { EarningsData } from '@/types/earnings';
-import { Languages } from 'lucide-react';
+import { Globe } from 'lucide-react';
 
 const Index = () => {
   const [earningsData, setEarningsData] = useState<EarningsData>({});
   const [language, setLanguage] = useState<'en' | 'de'>('en');
+
+  // Translation texts
+  const translations = {
+    en: {
+      daily: 'Daily',
+      current: 'Current',
+      charts: 'Charts',
+      compare: 'Compare',
+      history: 'History'
+    },
+    de: {
+      daily: 'Täglich',
+      current: 'Aktuell',
+      charts: 'Diagramme',
+      compare: 'Vergleich',
+      history: 'Verlauf'
+    }
+  };
+
+  const t = translations[language];
 
   // Load data from localStorage on component mount
   useEffect(() => {
@@ -67,7 +87,7 @@ const Index = () => {
             size="sm"
             className="absolute top-0 right-0 border-slate-600 text-slate-400 hover:bg-slate-700 hover:text-white"
           >
-            <Languages className="w-4 h-4 mr-2" />
+            <Globe className="w-4 h-4 mr-2" />
             {language === 'en' ? 'DE' : 'EN'}
           </Button>
           <h1 className="text-3xl font-bold text-white mb-2">Wolt Driver</h1>
@@ -80,31 +100,31 @@ const Index = () => {
               value="daily" 
               className="text-slate-300 data-[state=active]:bg-cyan-500 data-[state=active]:text-white text-xs"
             >
-              Daily
+              {t.daily}
             </TabsTrigger>
             <TabsTrigger 
               value="monthly" 
               className="text-slate-300 data-[state=active]:bg-cyan-500 data-[state=active]:text-white text-xs"
             >
-              Current
+              {t.current}
             </TabsTrigger>
             <TabsTrigger 
               value="charts" 
               className="text-slate-300 data-[state=active]:bg-cyan-500 data-[state=active]:text-white text-xs"
             >
-              Charts
+              {t.charts}
             </TabsTrigger>
             <TabsTrigger 
               value="compare" 
               className="text-slate-300 data-[state=active]:bg-cyan-500 data-[state=active]:text-white text-xs"
             >
-              Compare
+              {t.compare}
             </TabsTrigger>
             <TabsTrigger 
               value="history" 
               className="text-slate-300 data-[state=active]:bg-cyan-500 data-[state=active]:text-white text-xs"
             >
-              History
+              {t.history}
             </TabsTrigger>
           </TabsList>
 
