@@ -1,4 +1,6 @@
+import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { EarningsData } from '@/types/earnings';
 import { format, parse } from 'date-fns';
 import { ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
@@ -8,41 +10,30 @@ interface ChartsViewProps {
 }
 
 const ChartsView = ({ earningsData }: ChartsViewProps) => {
-  // Prepare data for charts
-  const chartData = Object.entries(earningsData)
-    .sort(([a], [b]) => a.localeCompare(b))
-    .map(([monthKey, monthData]) => {
-      const entries = Object.values(monthData);
-      const summary = entries.reduce((acc: any, entry: any) => ({
-        totalGross: acc.totalGross + entry.grossEarnings,
-        totalNet: acc.totalNet + entry.netEarnings,
-        totalHours: acc.totalHours + entry.hours,
-        totalOrders: acc.totalOrders + entry.orders,
-        daysWorked: acc.daysWorked + 1
-      }), {
-        totalGross: 0,
-        totalNet: 0,
-        totalHours: 0,
-        totalOrders: 0,
-        daysWorked: 0
-      });
-      
-      const monthDate = parse(monthKey, 'yyyy-MM', new Date());
-      
-      return {
-        month: format(monthDate, 'MMM yyyy'),
-        monthKey,
-        gross: summary.totalGross,
-        net: summary.totalNet,
-        hours: summary.totalHours,
-        orders: summary.totalOrders,
-        days: summary.daysWorked,
-        avgDaily: summary.daysWorked > 0 ? summary.totalNet / summary.daysWorked : 0,
-        avgHourly: summary.totalHours > 0 ? summary.totalNet / summary.totalHours : 0
-      };
-    });
+  // Get available months for selection
+  const availableMonths = Object.keys(earningsData).sort((a, b) => b.localeCompare(a));
+  const [selectedMonth, setSelectedMonth] = useState<string>(availableMonths[0] || '');
 
-  if (chartData.length === 0) {
+  // Prepare daily data for the selected month
+  const prepareDailyData = (monthKey: string) => {
+    if (!monthKey || !earningsData[monthKey]) return [];
+    
+    const monthData = earningsData[monthKey];
+    return Object.entries(monthData)
+      .map(([date, entry]: [string, any]) => ({
+        date: format(new Date(date), 'dd'),
+        fullDate: format(new Date(date), 'MMM dd'),
+        hours: entry.hours,
+        orders: entry.orders,
+        grossEarnings: entry.grossEarnings,
+        netEarnings: entry.netEarnings
+      }))
+      .sort((a, b) => parseInt(a.date) - parseInt(b.date));
+  };
+
+  const chartData = prepareDailyData(selectedMonth);
+
+  if (availableMonths.length === 0) {
     return (
       <Card className="bg-slate-800 border-slate-700">
         <CardContent className="py-8">
@@ -55,12 +46,40 @@ const ChartsView = ({ earningsData }: ChartsViewProps) => {
     );
   }
 
+  const selectedMonthName = selectedMonth ? format(parse(selectedMonth, 'yyyy-MM', new Date()), 'MMMM yyyy') : '';
+
   return (
     <div className="space-y-6">
-      {/* Hours vs Orders Relationship */}
+      {/* Month Selection */}
       <Card className="bg-slate-800 border-slate-700">
         <CardHeader>
-          <CardTitle className="text-white">Hours vs Orders Relationship</CardTitle>
+          <CardTitle className="text-white">Select Month to View Daily Data</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Select value={selectedMonth} onValueChange={setSelectedMonth}>
+            <SelectTrigger className="bg-slate-700 border-slate-600 text-white">
+              <SelectValue placeholder="Select a month" />
+            </SelectTrigger>
+            <SelectContent className="bg-slate-700 border-slate-600">
+              {availableMonths.map((monthKey) => {
+                const monthName = format(parse(monthKey, 'yyyy-MM', new Date()), 'MMMM yyyy');
+                return (
+                  <SelectItem key={monthKey} value={monthKey} className="text-white hover:bg-slate-600">
+                    {monthName}
+                  </SelectItem>
+                );
+              })}
+            </SelectContent>
+          </Select>
+        </CardContent>
+      </Card>
+
+      {/* Daily Hours vs Orders Chart */}
+      <Card className="bg-slate-800 border-slate-700">
+        <CardHeader>
+          <CardTitle className="text-white">
+            Daily Hours vs Orders - {selectedMonthName}
+          </CardTitle>
         </CardHeader>
         <CardContent>
           <ResponsiveContainer width="100%" height={400}>
@@ -71,6 +90,8 @@ const ChartsView = ({ earningsData }: ChartsViewProps) => {
                 stroke="#94a3b8" 
                 fontSize={12}
                 name="Hours"
+                type="number"
+                domain={['dataMin - 0.5', 'dataMax + 0.5']}
                 label={{ value: 'Hours Worked', position: 'insideBottom', offset: -10, style: { textAnchor: 'middle', fill: '#94a3b8' } }}
               />
               <YAxis 
@@ -78,6 +99,8 @@ const ChartsView = ({ earningsData }: ChartsViewProps) => {
                 stroke="#94a3b8" 
                 fontSize={12}
                 name="Orders"
+                type="number"
+                domain={['dataMin - 1', 'dataMax + 1']}
                 label={{ value: 'Orders Completed', angle: -90, position: 'insideLeft', style: { textAnchor: 'middle', fill: '#94a3b8' } }}
               />
               <Tooltip 
@@ -87,13 +110,13 @@ const ChartsView = ({ earningsData }: ChartsViewProps) => {
                   borderRadius: '6px',
                   color: '#fff'
                 }}
-                formatter={(value: any, name: string) => [
-                  name === 'orders' ? `${value} orders` : `${value.toFixed(1)} hours`,
+                formatter={(value: any, name: string, props: any) => [
+                  name === 'orders' ? `${value} orders` : `${value} hours`,
                   name === 'orders' ? 'Orders' : 'Hours'
                 ]}
                 labelFormatter={(label: any, payload: any) => {
                   if (payload && payload[0]) {
-                    return `${payload[0].payload.month}`;
+                    return `Day: ${payload[0].payload.fullDate}`;
                   }
                   return '';
                 }}
