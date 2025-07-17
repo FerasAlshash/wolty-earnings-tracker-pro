@@ -22,18 +22,20 @@ export const exportMonthToPDF = (monthKey: string, monthData: any) => {
   
   // Calculate summary
   const entries = Object.values(monthData);
-  const summary: SummaryData = entries.reduce((acc: SummaryData, entry: any) => ({
-    totalGross: acc.totalGross + entry.grossEarnings,
-    totalNet: acc.totalNet + entry.netEarnings,
-    totalHours: acc.totalHours + entry.hours,
-    totalOrders: acc.totalOrders + entry.orders,
-    daysWorked: acc.daysWorked + 1
-  }), {
+  const summary: SummaryData = {
     totalGross: 0,
     totalNet: 0,
     totalHours: 0,
     totalOrders: 0,
     daysWorked: 0
+  };
+  
+  entries.forEach((entry: any) => {
+    summary.totalGross += entry.grossEarnings;
+    summary.totalNet += entry.netEarnings;
+    summary.totalHours += entry.hours;
+    summary.totalOrders += entry.orders;
+    summary.daysWorked += 1;
   });
   
   // Summary section

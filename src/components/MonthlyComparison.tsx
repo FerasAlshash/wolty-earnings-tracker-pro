@@ -39,15 +39,7 @@ const MonthlyComparison = ({ earningsData }: MonthlyComparisonProps) => {
       };
     }
     
-    const summary = entries.reduce((acc: SummaryData, entry: any) => ({
-      totalGross: acc.totalGross + entry.grossEarnings,
-      totalNet: acc.totalNet + entry.netEarnings,
-      totalHours: acc.totalHours + entry.hours,
-      totalOrders: acc.totalOrders + entry.orders,
-      daysWorked: acc.daysWorked + 1,
-      avgDaily: 0,
-      avgHourly: 0
-    }), {
+    const summary: SummaryData = {
       totalGross: 0,
       totalNet: 0,
       totalHours: 0,
@@ -55,6 +47,14 @@ const MonthlyComparison = ({ earningsData }: MonthlyComparisonProps) => {
       daysWorked: 0,
       avgDaily: 0,
       avgHourly: 0
+    };
+    
+    entries.forEach((entry: any) => {
+      summary.totalGross += entry.grossEarnings;
+      summary.totalNet += entry.netEarnings;
+      summary.totalHours += entry.hours;
+      summary.totalOrders += entry.orders;
+      summary.daysWorked += 1;
     });
     
     return {

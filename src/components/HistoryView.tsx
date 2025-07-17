@@ -29,19 +29,23 @@ const HistoryView = ({ earningsData, onDeleteEntry }: HistoryViewProps) => {
       };
     }
     
-    return entries.reduce((acc: MonthlySummary, entry: any) => ({
-      totalGross: acc.totalGross + entry.grossEarnings,
-      totalNet: acc.totalNet + entry.netEarnings,
-      totalHours: acc.totalHours + entry.hours,
-      totalOrders: acc.totalOrders + entry.orders,
-      daysWorked: acc.daysWorked + 1
-    }), {
+    const result: MonthlySummary = {
       totalGross: 0,
       totalNet: 0,
       totalHours: 0,
       totalOrders: 0,
       daysWorked: 0
+    };
+    
+    entries.forEach((entry: any) => {
+      result.totalGross += entry.grossEarnings;
+      result.totalNet += entry.netEarnings;
+      result.totalHours += entry.hours;
+      result.totalOrders += entry.orders;
+      result.daysWorked += 1;
     });
+    
+    return result;
   };
 
   const handleDeleteEntry = (monthKey: string, date: string) => {
