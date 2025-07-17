@@ -1,15 +1,18 @@
 
 import { useState, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
 import DailyInput from '@/components/DailyInput';
 import MonthlyView from '@/components/MonthlyView';
 import HistoryView from '@/components/HistoryView';
 import ChartsView from '@/components/ChartsView';
 import MonthlyComparison from '@/components/MonthlyComparison';
 import { EarningsData } from '@/types/earnings';
+import { Languages } from 'lucide-react';
 
 const Index = () => {
   const [earningsData, setEarningsData] = useState<EarningsData>({});
+  const [language, setLanguage] = useState<'en' | 'de'>('en');
 
   // Load data from localStorage on component mount
   useEffect(() => {
@@ -57,7 +60,16 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
       <div className="container mx-auto px-4 py-6 max-w-md">
-        <div className="text-center mb-8">
+        <div className="text-center mb-8 relative">
+          <Button
+            onClick={() => setLanguage(language === 'en' ? 'de' : 'en')}
+            variant="outline"
+            size="sm"
+            className="absolute top-0 right-0 border-slate-600 text-slate-400 hover:bg-slate-700 hover:text-white"
+          >
+            <Languages className="w-4 h-4 mr-2" />
+            {language === 'en' ? 'DE' : 'EN'}
+          </Button>
           <h1 className="text-3xl font-bold text-white mb-2">Wolt Driver</h1>
           <p className="text-cyan-400 text-lg">Earnings Tracker</p>
         </div>
