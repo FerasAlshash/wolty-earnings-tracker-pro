@@ -1,4 +1,5 @@
 import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 import * as XLSX from 'xlsx';
 import { EarningsData } from '@/types/earnings';
 import { format, parse } from 'date-fns';
@@ -17,8 +18,12 @@ export const exportMonthToPDF = (monthKey: string, monthData: any) => {
   const monthName = format(monthDate, 'MMMM yyyy');
   
   // Header
-  doc.setFontSize(20);
-  doc.text(`Wolt Earnings Report - ${monthName}`, 20, 30);
+  doc.setFontSize(22);
+  doc.setTextColor(0, 150, 180);
+  doc.text('Wolt Driver Earnings Report', 105, 20, { align: 'center' });
+  doc.setFontSize(16);
+  doc.setTextColor(60, 60, 60);
+  doc.text(monthName, 105, 30, { align: 'center' });
   
   // Calculate summary
   const entries = Object.values(monthData);
@@ -38,39 +43,87 @@ export const exportMonthToPDF = (monthKey: string, monthData: any) => {
     summary.daysWorked += 1;
   });
   
-  // Summary section
-  doc.setFontSize(14);
-  doc.text('Monthly Summary:', 20, 50);
-  doc.setFontSize(12);
-  doc.text(`Total Gross: €${summary.totalGross.toFixed(2)}`, 20, 65);
-  doc.text(`Total Net: €${summary.totalNet.toFixed(2)}`, 20, 75);
-  doc.text(`Total Hours: ${summary.totalHours.toFixed(1)}`, 20, 85);
-  doc.text(`Total Orders: ${summary.totalOrders}`, 20, 95);
-  doc.text(`Days Worked: ${summary.daysWorked}`, 20, 105);
-  
-  // Daily entries
-  doc.setFontSize(14);
-  doc.text('Daily Entries:', 20, 125);
-  
-  let yPosition = 140;
-  const sortedEntries = Object.entries(monthData).sort(([a], [b]) => b.localeCompare(a));
-  
-  sortedEntries.forEach(([date, entry]: [string, any]) => {
-    if (yPosition > 270) {
-      doc.addPage();
-      yPosition = 20;
-    }
-    
-    doc.setFontSize(10);
-    doc.text(`${format(new Date(date), 'MMM dd, yyyy')}`, 20, yPosition);
-    doc.text(`Hours: ${entry.hours}h`, 20, yPosition + 10);
-    doc.text(`Orders: ${entry.orders}`, 70, yPosition + 10);
-    doc.text(`Cash: €${entry.cashReceived.toFixed(2)}`, 120, yPosition + 10);
-    doc.text(`Gross: €${entry.grossEarnings.toFixed(2)}`, 20, yPosition + 20);
-    doc.text(`Net: €${entry.netEarnings.toFixed(2)}`, 120, yPosition + 20);
-    
-    yPosition += 35;
+  // Summary table
+  autoTable(doc, {
+    startY: 40,
+    head: [['Metric', 'Value']],
+    body: [
+      ['Total Gross Earnings', `€${summary.totalGross.toFixed(2)}`],
+      ['Total Net Earnings', `€${summary.totalNet.toFixed(2)}`],
+      ['Total Hours Worked', `${summary.totalHours.toFixed(1)} h`],
+      ['Total Orders Completed', `${summary.totalOrders}`],
+      ['Days Worked', `${summary.daysWorked}`],
+      ['Average Daily Net', `€${(summary.totalNet / summary.daysWorked).toFixed(2)}`],
+    ],
+    headStyles: {
+      fillColor: [0, 150, 180],
+      fontSize: 12,
+      fontStyle: 'bold',
+      halign: 'center'
+    },
+    bodyStyles: {
+      fontSize: 11
+    },
+    columnStyles: {
+      0: { fontStyle: 'bold', cellWidth: 100 },
+      1: { halign: 'right', cellWidth: 80 }
+    },
+    margin: { left: 15, right: 15 },
+    theme: 'striped'
   });
+  
+  // Daily entries table
+  const sortedEntries = Object.entries(monthData).sort(([a], [b]) => b.localeCompare(a));
+  const dailyData = sortedEntries.map(([date, entry]: [string, any]) => [
+    format(new Date(date), 'dd MMM yyyy'),
+    `${entry.hours} h`,
+    `${entry.orders}`,
+    `€${entry.cashReceived.toFixed(2)}`,
+    `€${entry.grossEarnings.toFixed(2)}`,
+    `€${entry.netEarnings.toFixed(2)}`
+  ]);
+  
+  autoTable(doc, {
+    startY: (doc as any).lastAutoTable.finalY + 15,
+    head: [['Date', 'Hours', 'Orders', 'Cash', 'Gross', 'Net']],
+    body: dailyData,
+    headStyles: {
+      fillColor: [16, 185, 129],
+      fontSize: 11,
+      fontStyle: 'bold',
+      halign: 'center'
+    },
+    bodyStyles: {
+      fontSize: 10
+    },
+    columnStyles: {
+      0: { cellWidth: 35, halign: 'left' },
+      1: { cellWidth: 25, halign: 'center' },
+      2: { cellWidth: 25, halign: 'center' },
+      3: { cellWidth: 30, halign: 'right' },
+      4: { cellWidth: 35, halign: 'right' },
+      5: { cellWidth: 35, halign: 'right', fontStyle: 'bold' }
+    },
+    margin: { left: 15, right: 15 },
+    theme: 'grid',
+    alternateRowStyles: {
+      fillColor: [245, 247, 250]
+    }
+  });
+  
+  // Footer
+  const pageCount = (doc as any).internal.getNumberOfPages();
+  for (let i = 1; i <= pageCount; i++) {
+    doc.setPage(i);
+    doc.setFontSize(9);
+    doc.setTextColor(150, 150, 150);
+    doc.text(
+      `Page ${i} of ${pageCount}`,
+      105,
+      doc.internal.pageSize.height - 10,
+      { align: 'center' }
+    );
+  }
   
   doc.save(`wolt-earnings-${monthKey}.pdf`);
 };
