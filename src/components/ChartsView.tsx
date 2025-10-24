@@ -3,7 +3,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { EarningsData } from '@/types/earnings';
 import { format, parse } from 'date-fns';
-import { ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Line, LineChart } from 'recharts';
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface ChartsViewProps {
   earningsData: EarningsData;
@@ -82,53 +83,65 @@ const ChartsView = ({ earningsData }: ChartsViewProps) => {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <ResponsiveContainer width="100%" height={400}>
-            <ScatterChart data={chartData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#475569" />
-              <XAxis 
-                dataKey="hours" 
-                stroke="#94a3b8" 
-                fontSize={12}
-                name="Hours"
-                type="number"
-                domain={['dataMin - 0.5', 'dataMax + 0.5']}
-                label={{ value: 'Hours Worked', position: 'insideBottom', offset: -10, style: { textAnchor: 'middle', fill: '#94a3b8' } }}
-              />
-              <YAxis 
-                dataKey="orders" 
-                stroke="#94a3b8" 
-                fontSize={12}
-                name="Orders"
-                type="number"
-                domain={['dataMin - 1', 'dataMax + 1']}
-                label={{ value: 'Orders Completed', angle: -90, position: 'insideLeft', style: { textAnchor: 'middle', fill: '#94a3b8' } }}
-              />
-              <Tooltip 
-                contentStyle={{ 
-                  backgroundColor: '#1e293b', 
-                  border: '1px solid #475569',
-                  borderRadius: '6px',
-                  color: '#fff'
-                }}
-                formatter={(value: any, name: string, props: any) => [
-                  name === 'orders' ? `${value} orders` : `${value} hours`,
-                  name === 'orders' ? 'Orders' : 'Hours'
-                ]}
-                labelFormatter={(label: any, payload: any) => {
-                  if (payload && payload[0]) {
-                    return `Day: ${payload[0].payload.fullDate}`;
-                  }
-                  return '';
-                }}
-              />
-              <Scatter 
-                dataKey="orders" 
-                fill="#06b6d4"
-                stroke="#0891b2"
-                strokeWidth={2}
-              />
-            </ScatterChart>
-          </ResponsiveContainer>
+          <ScrollArea className="w-full">
+            <div style={{ minWidth: `${Math.max(600, chartData.length * 60)}px`, height: '350px' }}>
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={chartData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#475569" />
+                  <XAxis 
+                    dataKey="date" 
+                    stroke="#94a3b8" 
+                    fontSize={12}
+                    label={{ value: 'Day of Month', position: 'insideBottom', offset: -5, style: { textAnchor: 'middle', fill: '#94a3b8' } }}
+                  />
+                  <YAxis 
+                    yAxisId="left"
+                    stroke="#06b6d4" 
+                    fontSize={12}
+                    label={{ value: 'Hours', angle: -90, position: 'insideLeft', style: { textAnchor: 'middle', fill: '#06b6d4' } }}
+                  />
+                  <YAxis 
+                    yAxisId="right"
+                    orientation="right"
+                    stroke="#10b981" 
+                    fontSize={12}
+                    label={{ value: 'Orders', angle: 90, position: 'insideRight', style: { textAnchor: 'middle', fill: '#10b981' } }}
+                  />
+                  <Tooltip 
+                    contentStyle={{ 
+                      backgroundColor: '#1e293b', 
+                      border: '1px solid #475569',
+                      borderRadius: '6px',
+                      color: '#fff'
+                    }}
+                    formatter={(value: any, name: string) => [
+                      name === 'orders' ? `${value} orders` : `${value} hours`,
+                      name === 'orders' ? 'Orders' : 'Hours'
+                    ]}
+                    labelFormatter={(label: any) => `Day: ${label}`}
+                  />
+                  <Line 
+                    yAxisId="left"
+                    type="monotone" 
+                    dataKey="hours" 
+                    stroke="#06b6d4"
+                    strokeWidth={2}
+                    dot={{ fill: '#06b6d4', r: 4 }}
+                    activeDot={{ r: 6 }}
+                  />
+                  <Line 
+                    yAxisId="right"
+                    type="monotone" 
+                    dataKey="orders" 
+                    stroke="#10b981"
+                    strokeWidth={2}
+                    dot={{ fill: '#10b981', r: 4 }}
+                    activeDot={{ r: 6 }}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+          </ScrollArea>
         </CardContent>
       </Card>
     </div>

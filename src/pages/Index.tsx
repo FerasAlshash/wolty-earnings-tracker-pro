@@ -85,7 +85,7 @@ const Index = () => {
             onClick={() => setLanguage(language === 'en' ? 'de' : 'en')}
             variant="outline"
             size="sm"
-            className="absolute top-0 right-0 border-slate-600 text-slate-400 hover:bg-slate-700 hover:text-white"
+            className="absolute top-0 right-0 bg-gradient-to-r from-cyan-500 to-green-500 border-0 text-white hover:from-cyan-600 hover:to-green-600"
           >
             <Globe className="w-4 h-4 mr-2" />
             {language === 'en' ? 'DE' : 'EN'}
@@ -129,11 +129,11 @@ const Index = () => {
           </TabsList>
 
           <TabsContent value="daily" className="mt-6">
-            <DailyInput onAddEntry={addDailyEntry} earningsData={earningsData} />
+            <DailyInput onAddEntry={addDailyEntry} earningsData={earningsData} language={language} />
           </TabsContent>
 
           <TabsContent value="monthly" className="mt-6">
-            <MonthlyView earningsData={earningsData} />
+            <MonthlyView earningsData={earningsData} language={language} />
           </TabsContent>
 
           <TabsContent value="charts" className="mt-6">

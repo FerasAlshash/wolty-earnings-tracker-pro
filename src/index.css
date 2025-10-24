@@ -102,4 +102,24 @@ All colors MUST be HSL.
   body {
     @apply bg-background text-foreground;
   }
+
+  /* Calendar color customization */
+  .rdp-day_selected:not([disabled]) { 
+    background-color: hsl(186.3 90.7% 42.9%) !important;
+    color: white !important;
+  }
+  
+  .rdp-day_selected:hover:not([disabled]) { 
+    background-color: hsl(186.3 90.7% 35%) !important;
+  }
+  
+  .rdp-day:hover:not([disabled]):not(.rdp-day_selected) {
+    background-color: hsl(142.1 76.2% 45%) !important;
+    color: white !important;
+  }
+  
+  .rdp-button:hover:not([disabled]):not(.rdp-day_selected) {
+    background-color: hsl(142.1 76.2% 45%) !important;
+    color: white !important;
+  }
 }

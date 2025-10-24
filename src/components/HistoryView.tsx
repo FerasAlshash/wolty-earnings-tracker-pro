@@ -4,9 +4,9 @@ import { Button } from "@/components/ui/button";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { EarningsData, MonthlySummary } from '@/types/earnings';
 import { format, parse } from 'date-fns';
-import { ChevronDown, ChevronUp, Trash2, FileText, FileSpreadsheet } from 'lucide-react';
+import { ChevronDown, ChevronUp, Trash2, FileText } from 'lucide-react';
 import { toast } from "@/hooks/use-toast";
-import { exportMonthToPDF, exportMonthToExcel } from '@/utils/exportUtils';
+import { exportMonthToPDF } from '@/utils/exportUtils';
 
 interface HistoryViewProps {
   earningsData: EarningsData;
@@ -95,15 +95,6 @@ const HistoryView = ({ earningsData, onDeleteEntry }: HistoryViewProps) => {
                     title="Export to PDF"
                   >
                     <FileText className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => exportMonthToExcel(monthKey, monthData)}
-                    className="text-slate-400 hover:text-white hover:bg-slate-700"
-                    title="Export to Excel"
-                  >
-                    <FileSpreadsheet className="h-4 w-4" />
                   </Button>
                   <Button
                     variant="ghost"

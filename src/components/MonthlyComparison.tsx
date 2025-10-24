@@ -152,20 +152,6 @@ const MonthlyComparison = ({ earningsData }: MonthlyComparisonProps) => {
         </CardHeader>
         <CardContent className="space-y-4">
           <ComparisonItem
-            title="Net Earnings"
-            current={currentSummary.totalNet}
-            previous={previousSummary.totalNet}
-            unit="€"
-          />
-          
-          <ComparisonItem
-            title="Gross Earnings"
-            current={currentSummary.totalGross}
-            previous={previousSummary.totalGross}
-            unit="€"
-          />
-          
-          <ComparisonItem
             title="Total Hours"
             current={currentSummary.totalHours}
             previous={previousSummary.totalHours}
@@ -185,16 +171,9 @@ const MonthlyComparison = ({ earningsData }: MonthlyComparisonProps) => {
           />
           
           <ComparisonItem
-            title="Daily Average"
-            current={currentSummary.avgDaily}
-            previous={previousSummary.avgDaily}
-            unit="€"
-          />
-          
-          <ComparisonItem
-            title="Hourly Average"
-            current={currentSummary.avgHourly}
-            previous={previousSummary.avgHourly}
+            title="Gross Earnings"
+            current={currentSummary.totalGross}
+            previous={previousSummary.totalGross}
             unit="€"
           />
         </CardContent>
