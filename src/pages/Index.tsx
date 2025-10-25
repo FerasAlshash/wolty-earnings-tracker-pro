@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import DailyInput from '@/components/DailyInput';
 import MonthlyView from '@/components/MonthlyView';
 import HistoryView from '@/components/HistoryView';
-import ChartsView from '@/components/ChartsView';
 import MonthlyComparison from '@/components/MonthlyComparison';
 import { EarningsData } from '@/types/earnings';
 import { Globe } from 'lucide-react';
@@ -19,14 +18,12 @@ const Index = () => {
     en: {
       daily: 'Daily',
       current: 'Current',
-      charts: 'Charts',
       compare: 'Compare',
       history: 'History'
     },
     de: {
       daily: 'Täglich',
       current: 'Aktuell',
-      charts: 'Diagramme',
       compare: 'Vergleich',
       history: 'Verlauf'
     }
@@ -95,7 +92,7 @@ const Index = () => {
         </div>
 
         <Tabs defaultValue="daily" className="w-full">
-          <TabsList className="grid w-full grid-cols-5 bg-slate-800 border border-slate-700">
+          <TabsList className="grid w-full grid-cols-4 bg-slate-800 border border-slate-700">
             <TabsTrigger 
               value="daily" 
               className="text-slate-300 data-[state=active]:bg-cyan-500 data-[state=active]:text-white text-xs"
@@ -107,12 +104,6 @@ const Index = () => {
               className="text-slate-300 data-[state=active]:bg-cyan-500 data-[state=active]:text-white text-xs"
             >
               {t.current}
-            </TabsTrigger>
-            <TabsTrigger 
-              value="charts" 
-              className="text-slate-300 data-[state=active]:bg-cyan-500 data-[state=active]:text-white text-xs"
-            >
-              {t.charts}
             </TabsTrigger>
             <TabsTrigger 
               value="compare" 
@@ -134,10 +125,6 @@ const Index = () => {
 
           <TabsContent value="monthly" className="mt-6">
             <MonthlyView earningsData={earningsData} language={language} />
-          </TabsContent>
-
-          <TabsContent value="charts" className="mt-6">
-            <ChartsView earningsData={earningsData} />
           </TabsContent>
 
           <TabsContent value="compare" className="mt-6">
