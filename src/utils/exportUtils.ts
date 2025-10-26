@@ -137,17 +137,17 @@ export const exportMonthToPDF = async (monthKey: string, monthData: any) => {
       const pdfOutput = doc.output('datauristring');
       const base64Data = pdfOutput.split(',')[1];
       
-      // @ts-ignore - Capacitor plugins will be available in native build
-      const { Filesystem, Directory } = await import('@capacitor/filesystem');
+      // @ts-ignore - Access Capacitor plugins from window
+      const { Filesystem } = window.Capacitor.Plugins;
       // @ts-ignore
-      const { Share } = await import('@capacitor/share');
+      const { Share } = window.Capacitor.Plugins;
       // @ts-ignore
-      const { Toast } = await import('@capacitor/toast');
+      const { Toast } = window.Capacitor.Plugins;
       
       const savedFile = await Filesystem.writeFile({
         path: fileName,
         data: base64Data,
-        directory: Directory.Documents
+        directory: 'DOCUMENTS'
       });
       
       await Share.share({
@@ -173,7 +173,7 @@ export const exportMonthToPDF = async (monthKey: string, monthData: any) => {
     if (isNative) {
       try {
         // @ts-ignore
-        const { Toast } = await import('@capacitor/toast');
+        const { Toast } = window.Capacitor.Plugins;
         await Toast.show({
           text: 'Failed to export PDF',
           duration: 'long',
